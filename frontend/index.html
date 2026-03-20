@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>EXPENSE TRACKER</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Google Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css" />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Dashboard Sidebar -->
+      <aside class="dashboard-sidebar" id="dashboardSidebar">
+        <div class="dashboard-brand">
+          <button class="dashboard-sidebar-toggle">
+            <span class="material-symbols-rounded">menu</span>
+          </button>
+          <a class="logo">Dashboard</a>
+        </div>
+        <nav class="dashboard-nav">
+           <div class="dashboard-nav-section">
+            <a href="#" class="dashboard-nav-item active" data-view="overview">
+              <span class="nav-icon material-symbols-rounded">dashboard</span>
+              <span class="nav-label">Overview</span>
+            </a>
+            <a href="#" class="dashboard-nav-item" data-view="projects">
+              <span class="nav-icon material-symbols-rounded">account_balance_wallet</span>
+              <span class="nav-label">Expenses</span>
+            </a>
+            <a href="#" class="dashboard-nav-item" data-view="tasks">
+              <span class="nav-icon material-symbols-rounded">checklist</span>
+              <span class="nav-label">Tasks</span>
+            </a>
+            <a href="#" class="dashboard-nav-item" data-view="reports">
+              <span class="nav-icon material-symbols-rounded">bar_chart</span>
+              <span class="nav-label">Reports</span>
+            </a>
+            <a href="#" class="dashboard-nav-item" data-view="settings">
+              <span class="nav-icon material-symbols-rounded">smart_toy</span>
+              <span class="nav-label">AI Chatbot</span>
+            </a>
+          </div>
+        </nav>
+        <!-- Back to Site Button -->
+        <div class="sidebar-footer">
+          <a href="#" class="btn btn-secondary sidebar-back-button">
+            <span class="icon material-symbols-rounded">logout</span>
+            <span class="btn-label">Logout</span>
+          </a>
+        </div>
+      </aside>
+      <div class="dashboard-sidebar-overlay" id="dashboardSidebarOverlay"></div>
+      <!-- Dashboard Main Content -->
+      <main class="dashboard-main">
+        <!-- Dashboard Header -->
+        <header class="dashboard-header">
+          <!-- Header Content -->
+          <div class="dashboard-header-content">
+            <button class="dashboard-sidebar-toggle">
+              <span class="material-symbols-rounded">menu</span>
+            </button>
+            <h1 class="dashboard-header-title" id="dashboardTitle">Hi User!!</h1>
+          </div>
+          <!-- Header Actions -->
+          <div class="dashboard-header-actions">
+            <!-- Mobile Search Button -->
+            <button class="mobile-search-btn btn btn-ghost" id="mobileSearchBtn">
+              <span class="material-symbols-rounded">search</span>
+            </button>
+<!-- User Profile -->
+<div class="user-menu" id="userMenu">
+  <div class="user-menu-trigger" id="user-menu-trigger">
+    <div class="user-avatar-small">
+      <span class="icon material-symbols-rounded">person</span>
+    </div>
+  </div>
+  <div class="user-menu-dropdown">
+    <!-- Update Profile -->
+    <a href="#" class="user-menu-item" onclick="openProfileModal()">
+      <span class="icon material-symbols-rounded">person</span>
+      <span>Update Profile</span>
+    </a>
+
+    <!-- Theme Toggle (using logo/icon instead of Light/Dark) -->
+                <div class="user-menu-item theme-item">
+                  <span class="icon material-symbols-rounded">palette</span>
+                  <div class="theme-toggle" id="theme-toggle">
+                    <div class="theme-option active" data-theme="light">Light</div>
+                    <div class="theme-option" data-theme="dark">Dark</div>
+                  </div>
+                </div>
+  </div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal" style="
+  display:none;       /* keep it hidden initially */
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.5);
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+">
+  <div style="
+    background:#fff;
+    color: black;
+    padding:20px;
+    border-radius:10px;
+    width:320px;
+    max-width:90%;
+    box-shadow:0 4px 8px rgba(0,0,0,0.2);
+  ">
+    <h3>Update Profile</h3>
+
+    <input type="text" id="profileName" placeholder="Name"><br><br>
+    <input type="email" id="profileEmail" placeholder="Email"><br><br>
+    <input type="text" id="profilePhone" placeholder="Phone Number"><br><br>
+    <input type="number" id="profileSalary" placeholder="Salary"><br><br>
+    <input type="password" id="profilePassword" placeholder="New Password"><br><br>
+
+    <div style="display:flex; justify-content:space-between;">
+      <button  class="btn btn-primary" onclick="saveProfile()">Save</button>
+      <button  class="btn btn-primary" onclick="closeProfileModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+          </div>
+        </header>
+        <!-- Dashboard Content -->
+ <div class="dashboard-content">
+          <!-- Overview View -->
+          <div class="dashboard-view active" id="overview">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-card-header">
+                  <div class="stat-card-title">Total Income</div>
+                  <div class="stat-card-icon primary">
+                    <span class="material-symbols-rounded">currency_rupee</span>
+                  </div>
+                </div>
+                <div class="stat-card-value">50000</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-header">
+                  <div class="stat-card-title">Total Expenses</div>
+                  <div class="stat-card-icon success">
+                    <span class="material-symbols-rounded">receipt_long</span>
+                  </div>
+                </div>
+                <div class="stat-card-value">500</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-header">
+                  <div class="stat-card-title">Remaining Balance</div>
+                  <div class="stat-card-icon warning">
+                    <span class="material-symbols-rounded">savings</span>
+                  </div>
+                </div>
+                <div class="stat-card-value">49500</div>
+              </div>
+            </div>
+            <!-- Charts -->
+            <div class="chart-grid">
+              <div class="chart-card">
+                <div class="chart-card-header">
+                  <h3 class="chart-card-title">Spending analysis</h3>
+                  <p class="chart-card-subtitle">Monthly overview</p>
+                </div>
+                <div class="chart-container">
+                  <canvas id="progressChart"></canvas>
+                </div>
+              </div>
+              <div class="chart-card">
+                <div class="chart-card-header">
+                  <h3 class="chart-card-title">Expense Distribution</h3>
+                  <p class="chart-card-subtitle">Expenses by category</p>
+                </div>
+                <div class="chart-container">
+                  <canvas id="categoryChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Expenses View -->
+            <div class="dashboard-view" id="projects">
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                <span class="material-symbols-rounded">account_balance_wallet</span>
+                </div>
+                <h3 class="empty-state-title">Expenses</h3>
+                <p class="empty-state-description">
+                Track and manage your expenses. Add new expenses, categorize spending, and monitor your budget.
+                </p>
+            </div>
+
+            <div class="dashboard-table-container">
+                <div class="dashboard-table-header">
+                <h3 class="dashboard-table-title">Expenses</h3>
+                <button class="btn btn-secondary" id="openModalBtn">+ Add Expense</button>
+                </div>
+
+                <table class="dashboard-table">
+                <thead>
+                    <tr>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="expenseTableBody">
+                    <tr>
+                    <td>₹500</td>
+                    <td>Food</td>
+                    <td>Mar 18, 2026</td>
+                    <td>Chennai</td>
+                    <td>
+                        <button class="btn btn-ghost edit-btn">
+                        <span class="material-symbols-rounded">edit</span>
+                        </button>
+                        <button class="btn btn-ghost delete-btn">
+                        <span class="material-symbols-rounded">delete</span>
+                        </button>
+                    </td>
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+            </div>
+            <!-- ✅ EXPENSE MODAL (POPUP) -->
+            <div id="expenseModal" style="
+            display:none;
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.5);
+            justify-content:center;
+            align-items:center;
+            z-index:1000;
+            ">
+
+            <div style="
+                background:#fff;
+                padding:20px;
+                border-radius:10px;
+                width:320px;
+            ">
+                <h3>Add Expense</h3>
+
+                <input type="number" id="amount" placeholder="Amount" class="form-input" /><br><br>
+                <input type="text" id="category" placeholder="Category" class="form-input" /><br><br>
+                <input type="date" id="date" class="form-input" /><br><br>
+                <input type="text" id="location" placeholder="Location" class="form-input" /><br><br>
+
+                <button class="btn btn-primary" onclick="addExpense()">Save</button>
+                <button class="btn btn-secondary" id="closeModalBtn">Cancel</button>
+            </div>
+
+        </div>
+        
+            <!-- Tasks View -->
+            <div class="dashboard-view" id="tasks">
+            <div class="dashboard-table-container">
+                
+                <div class="dashboard-table-header">
+                <h3 class="dashboard-table-title">Task Calendar</h3>
+                </div>
+
+                <!-- Calendar -->
+                <div id="calendar"></div>
+
+            </div>
+            </div>  
+        <!-- Task Modal -->
+        <div id="taskModal" style="
+        display:none;
+        position:fixed;
+        top:0; left:0;
+        width:100%; height:100%;
+        background:rgba(0,0,0,0.5);
+        justify-content:center;
+        align-items:center;
+        z-index:1000;
+        ">
+        <div style="background:#fff; padding:20px; border-radius:10px; width:300px;">
+            <h3 id="expenseModalTitle">Add Task</h3>
+
+            <input type="text" id="taskTitle" placeholder="Task Title"><br><br>
+            <input type="datetime-local" id="taskTime"><br><br>
+
+            <button class="btn btn-primary" onclick="saveTask()">Save</button>
+            <button class="btn btn-primary" onclick="closeTaskModal()">Cancel</button>
+        </div>
+        </div>
+          <!-- Reports View -->
+        <div class="dashboard-view" id="reports">
+        <div class="empty-state">
+            <div class="empty-state-icon">
+            <span class="material-symbols-rounded">bar_chart</span>
+            </div>
+
+            <h3 class="empty-state-title">Reports</h3>
+            <p class="empty-state-description">
+            Generate detailed reports and analytics.
+            </p>
+
+            <!-- ✅ NEW BUTTONS -->
+            <div style="margin-top:20px;">
+            <button class="btn btn-primary" onclick="downloadCSV()">Download CSV</button>
+            <button class="btn btn-primary" onclick="downloadPDF()">Download PDF</button>
+            </div>
+
+        </div>
+    </div>
+          <!-- Chatbot View -->
+    <div class="dashboard-view" id="settings">
+        <div id="chatStartContainer" class="empty-state">
+            <div class="empty-state-icon">
+            <span class="material-symbols-rounded">smart_toy</span>
+            </div>
+
+            <h3 class="empty-state-title">AI Chatbot</h3>
+            <p class="empty-state-description">
+            Ask questions about your expenses and get AI-powered insights.
+            </p>
+
+            <!-- ✅ START BUTTON -->
+            <button class="btn btn-primary" onclick="startChat()">
+            Start Conversation
+            </button>
+        </div>
+
+        <!-- ✅ CHAT BOX (HIDDEN INITIALLY) -->
+        <div id="chatContainer" style="display:none; padding:20px;">
+            <div id="chatMessages" style="height:300px; overflow-y:auto; margin-bottom:10px; border:1px solid #ddd; padding:10px;">
+        </div>
+
+        <div class="chat-input-container">
+        <input type="text" id="chatInput" placeholder="Type a message..." />
+        <button onclick="sendMessage()">
+            <i class="fa fa-paper-plane"></i>
+        </button>
+        </div>
+
+    </div>
+    <!-- Scripts -->
+    <script src="script.js"></script>
+  </body>
+</html>

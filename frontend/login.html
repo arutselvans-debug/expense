@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>GETA.</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="title" id="form-title">Login</div>
+
+  <form id="auth-form">
+    
+    <!-- Name (hidden for login) -->
+    <div class="field" id="name-field" style="display:none;">
+      <input type="text" id="name">
+      <label>Name</label>
+    </div>
+
+    <!-- ✅ FIXED EMAIL -->
+    <div class="field">
+      <input type="text" id="email" required>
+      <label>Email Address</label>
+    </div>
+
+    <!-- ✅ FIXED PASSWORD -->
+    <div class="field">
+      <input type="password" id="password" required>
+      <label>Password</label>
+    </div>
+
+    <div class="field">
+      <input type="submit" id="submit-btn" value="Login">
+    </div>
+
+    <div class="signup-link" id="toggle-text">
+      Don't have an account? <a href="#" onclick="toggleForm()">Signup now</a>
+    </div>
+
+  </form>
+</div>
+
+<script>
+let isSignup = false;
+
+// 🔁 Toggle form
+function toggleForm(forceMode = null) {
+  if (forceMode !== null) {
+    isSignup = (forceMode === "signup");
+  } else {
+    isSignup = !isSignup;
+  }
+
+  const title = document.getElementById("form-title");
+  const nameField = document.getElementById("name-field");
+  const submitBtn = document.getElementById("submit-btn");
+  const toggleText = document.getElementById("toggle-text");
+
+  if (isSignup) {
+    title.innerText = "Signup";
+    nameField.style.display = "block";
+    submitBtn.value = "Register";
+    toggleText.innerHTML =
+      `Already have an account? <a href="#" onclick="toggleForm('login')">Login</a>`;
+  } else {
+    title.innerText = "Login";
+    nameField.style.display = "none";
+    submitBtn.value = "Login";
+    toggleText.innerHTML =
+      `Don't have an account? <a href="#" onclick="toggleForm('signup')">Signup now</a>`;
+  }
+}
+
+// 🔥 Auto detect mode
+window.onload = function () {
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get("mode");
+
+  if (mode === "signup") toggleForm("signup");
+  else toggleForm("login");
+};
+
+// 🚀 MAIN AUTH HANDLER
+document.getElementById("auth-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  // ✅ SAFE NAME HANDLING
+  const nameInput = document.getElementById("name");
+  const name = nameInput ? nameInput.value : "";
+
+  // ✅ NOW THESE WILL NOT BE NULL
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  // ✅ CORRECT API PATH
+  const url = isSignup
+    ? "http://127.0.0.1:8000/auth/register"
+    : "http://127.0.0.1:8000/auth/login";
+
+  const payload = isSignup
+    ? { name, email, password }
+    : { email, password };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.detail || "Something went wrong");
+      return;
+    }
+
+    // ✅ REGISTER SUCCESS
+    if (isSignup) {
+      alert("Registered successfully! Please login.");
+      toggleForm("login");
+      return;
+    }
+
+    // ✅ LOGIN SUCCESS
+    localStorage.setItem("token", data.access_token);
+
+    alert("Login successful!");
+
+    // 🔥 Redirect
+    window.location.href = "index.html";
+
+  } catch (error) {
+    console.error(error);
+    alert("Server error");
+  }
+});
+</script>
+
+</body>
+</html>
